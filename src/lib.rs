@@ -226,6 +226,12 @@ pub use crate::video_info::{
     },
     VideoInfo,
 };
+
+mod by_name;
+pub use by_name::get_by_name;
+mod playlist;
+pub use crate::playlist::get_playlist;
+
 #[doc(inline)]
 #[cfg(feature = "microformat")]
 pub use crate::video_info::player_response::microformat::Microformat;
