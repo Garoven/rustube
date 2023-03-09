@@ -51,7 +51,7 @@ pub static EMBED_URL_PATTERN: once_cell::sync::Lazy<Regex> = once_cell::sync::La
 );
 pub static EMBED_URL_PATTERN_MUSIC: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(||
     // embed url    (i.e. https://youtube.com/embed/video_id)
-    Regex::new(r"^(https?://)?(www\.)?music.youtube.\w\w\w?/embed/(?P<id>[a-zA-Z0-9_-]{11})\\?(\?.*)?$").unwrap()
+    Regex::new(r"^(https?://)?(www\.)?music.youtube.\w\w\w?/watch\?v=(?P<id>[a-zA-Z0-9_-]{11})(&.*)?$").unwrap()
 );
 /// A pattern matching the embedded url of a video (i.e. `youtu.be/<ID>`).
 #[cfg(feature = "regex")]
