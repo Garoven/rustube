@@ -24,10 +24,11 @@ pub type IdBuf = Id<'static>;
 /// - each pattern contains an `id` group that will always capture when the pattern matches
 /// - The captured id will always match following regex (defined in [ID_PATTERN]): `^[a-zA-Z0-9_-]{11}$`
 #[cfg(feature = "regex")]
-pub static ID_PATTERNS: [&once_cell::sync::Lazy<Regex>; 5] = [
+pub static ID_PATTERNS: [&once_cell::sync::Lazy<Regex>; 6] = [
     &WATCH_URL_PATTERN,
     &SHORTS_URL_PATTERN,
     &EMBED_URL_PATTERN,
+    &EMBED_URL_PATTERN_MUSIC,
     &SHARE_URL_PATTERN,
     &ID_PATTERN
 ];
@@ -47,6 +48,10 @@ pub static SHORTS_URL_PATTERN: once_cell::sync::Lazy<Regex> = once_cell::sync::L
 pub static EMBED_URL_PATTERN: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(||
     // embed url    (i.e. https://youtube.com/embed/video_id)
     Regex::new(r"^(https?://)?(www\.)?youtube.\w\w\w?/embed/(?P<id>[a-zA-Z0-9_-]{11})\\?(\?.*)?$").unwrap()
+);
+pub static EMBED_URL_PATTERN_MUSIC: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(||
+    // embed url    (i.e. https://youtube.com/embed/video_id)
+    Regex::new(r"^(https?://)?(www\.)?music.youtube.\w\w\w?/embed/(?P<id>[a-zA-Z0-9_-]{11})\\?(\?.*)?$").unwrap()
 );
 /// A pattern matching the embedded url of a video (i.e. `youtu.be/<ID>`).
 #[cfg(feature = "regex")]
