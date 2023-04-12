@@ -5,21 +5,14 @@ use serde_json::Value;
 #[derive(Debug)]
 pub struct Playlist {
     pub links: Vec<String>,
-    pub title: String,
-    pub author: String,
-    pub length: u64
 }
 
 pub async fn get_playlist(link: &str) -> Playlist {
     let html: String = get_html(link).await;
     let json: String = parse_for_js(html);
-    let extras: (String, String, u64) = get_extras(&json);
     let video_vec: Vec<String> = json_to_vec_videos(&json);
     let final_exp: Playlist = Playlist {
         links: video_vec,
-        title: extras.0,
-        author: extras.1,
-        length: extras.2
     };
     final_exp
 }
@@ -29,15 +22,6 @@ async fn get_html(link: &str) -> String {
     let val = reqwest::get(link).await
         .unwrap().text().await.unwrap();
     val
-}
-
-fn get_extras(json: &String) -> (String, String, u64) {
-    let obj: Value = serde_json::from_str(json.as_str()).unwrap();
-    let title: String = obj["metadata"]["playlistMetadataRenderer"]["title"].to_string();
-    let author: String = obj["header"]["playlistHeaderRenderer"]["ownerText"]["runs"][0]["text"].to_string();
-    let count: u64 = obj["header"]["playlistHeaderRenderer"]["numVideosText"]["runs"][0]["text"].as_str().unwrap().parse().unwrap();
-
-    return (title, author, count)
 }
 
 // turns the json into a vec of the videos

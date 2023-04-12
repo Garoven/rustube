@@ -5,8 +5,8 @@ use serde_json::Value;
 use crate::{Video, Id, Result};
 
 pub async fn get_by_name(name: &str) -> Result<Video> {
-    let html = get_html(name).await;
-    let json = parse_for_js(html);
+    let html = get_html(&name).await?;
+    let json = parse_for_js(&html);
     let id_raw = match Id::from_string(get_id(&json)?) {
         Ok(id) => id,
         Err(_) => return Err(crate::Error::BadIdFormat)
@@ -14,8 +14,8 @@ pub async fn get_by_name(name: &str) -> Result<Video> {
     Ok(Video::from_id(id_raw).await?)
 }
 
-fn get_id(json: &String) -> Result<String> {
-    let obj: Value = serde_json::from_str(json.as_str()).unwrap();
+fn get_id(json: &str) -> Result<String> {
+    let obj: Value = serde_json::from_str(json).unwrap();
     let list = match obj["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"].as_array() {
         Some(l) => l,
         None => return Err(crate::Error::Internal("Error parsing html"))
@@ -34,21 +34,21 @@ fn get_id(json: &String) -> Result<String> {
 }
 
 // gets the html from the given name
-async fn get_html(name: &str) -> String {
+async fn get_html(name: &str) -> Result<String> {
     let link = format!("https://www.youtube.com/results?search_query={}", name.replace(" ", "+"));
-    let val = reqwest::get(link).await
-        .unwrap().text().await.unwrap();
-    val
+    let val = reqwest::get(link).await?
+        .text().await?;
+    Ok(val)
 }
 
 // parses the html looking for the json object
-fn parse_for_js(html: String) -> String {
+fn parse_for_js(html: &str) -> String {
     // regex pattern to find the "ytInitialData = " string that signifies the json obj
     let pattern = r#"ytInitialData\s*=\s*"#;
     // unwrap the pattern
     let re = Regex::new(pattern).unwrap();
     // finds the only instance of this, if not found in the html, a panic occurs
-    let result = re.find(&html).expect("Pattern not found!");
+    let result = re.find(html).expect("Pattern not found!");
     // get the end of the found pattern. This will give the char position in the html where
     // the obj begins
     let start_index = result.end();
